@@ -1,7 +1,8 @@
 import pygame
 import math
 
-width,height = 800,600
+width,height = 1920,1080
+HALF_WIDTH,HALF_HEIGHT = int(width/2),int(height/2)
 
 #jogador
 class player(pygame.sprite.Sprite):
@@ -13,17 +14,19 @@ class player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x,y)
         self.angle = 0
-    def update(self,x,y):
-        if self.rect.x <= 0:
-            self.rect.x = 0
-        elif self.rect.x >= width-self.rect.width:
-            self.rect.x = width -self.rect.width
-        if self.rect.y <= 0:
-            self.rect.y = 0
-        elif self.rect.y >= height - self.rect.height:
-            self.rect.y = height - self.rect.height
-        self.rect.x += x
-        self.rect.y += y
+    def update(self,v):
+        a = pygame.key.get_pressed()[pygame.K_a]
+        s = pygame.key.get_pressed()[pygame.K_s]
+        d = pygame.key.get_pressed()[pygame.K_d]
+        w = pygame.key.get_pressed()[pygame.K_w]
+        if a:
+            self.rect.x -= v
+        if s:
+            self.rect.y += v
+        if d:
+            self.rect.x += v
+        if w:
+            self.rect.y -= v
 
     def draw(self,screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
@@ -31,10 +34,9 @@ class player(pygame.sprite.Sprite):
         pygame.draw.rect(screen, (0,0,0), self.rect, 2)
     def rotate(self):
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        rel_x,rel_y = mouse_x - self.rect.center[0], mouse_y - self.rect.center[1]
+        rel_x,rel_y = mouse_x - self.rect.x, mouse_y - self.rect.y
         self.angle =  ((180 / math.pi) * -math.atan2(rel_y, rel_x))
         self.image = pygame.transform.rotate(self.original_image, self.angle)
-        self.rect = self.image.get_rect(center = self.rect.center)
 
 
 class tiro(pygame.sprite.Sprite):
@@ -86,6 +88,22 @@ class invasor(pygame.sprite.Sprite):
         screen.blit(self.image, (self.rect.x, self.rect.y))
     def draw_hitbox(self,screen):
         pygame.draw.rect(screen, (0,0,0), self.rect, 2)
+
+class Camera(object):
+    def __init__(self, width, height):
+        self.state = pygame.Rect(0, 0, width, height)
+        
+    def apply(self, target):
+        return target.rect.move(self.state.topleft)
+        
+    def update(self, target):
+        self.state = self.simple_camera(self.state, target.rect)
+    
+    def simple_camera(self, camera, target_rect):
+        l, t, _, _ = target_rect # l = left,  t = top
+        _, _, w, h = camera      # w = width, h = height
+        return pygame.Rect(-l+HALF_WIDTH, -t+HALF_HEIGHT, w, h)
+    
 
 
 tiros = pygame.sprite.Group()
