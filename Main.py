@@ -1,5 +1,5 @@
 import pygame
-from funcoes_base import *
+from Classes import *
 import random
 
 pygame.init()
@@ -7,7 +7,7 @@ pygame.init()
 
 screen = pygame.display.set_mode((width,height))
 
-
+background = pygame.image.load("u.jpg")
 
 pygame.display.set_caption("Jogo 1")
 icon = pygame.image.load("cirurgia-robotica.png")
@@ -16,16 +16,8 @@ pygame.display.set_icon(icon)
 
 
 
-p1 = player('player.png',370,480) 
+p1 = player('player.png',width/2,height/2) 
 players.add(p1)
-
-
-p_right = False
-p_down = False
-p_up = False
-p_left = False
-w_down = False
-e_down = False
 
 running = True
 
@@ -39,16 +31,16 @@ start_t = pygame.time.get_ticks()
 start = pygame.time.get_ticks()
 start_w = pygame.time.get_ticks()
 start_r = pygame.time.get_ticks()
-
-
+# instanciando camera
+camera = Camera(width,height)
 
 while running: 
-    screen.fill((255, 230, 250))
+    screen.blit(background,(0,0))
     clock.tick(120)
 
 
     #for sprite in all_sprites:
-    #  sprite.draw_hitbox(screen)
+    # sprite.draw_hitbox(screen)
 
     now = pygame.time.get_ticks()
     if now-start >= 1000:
@@ -70,39 +62,6 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        
-        if event.type == pygame.KEYDOWN: 
-            if event.key == pygame.K_a:                        
-                p_left = True
-            if event.key == pygame.K_d:
-                p_right = True
-            if event.key == pygame.K_w:
-                p_up = True
-            if event.key == pygame.K_s:
-                p_down = True
-
-
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_a:              
-                p_left = False
-            if event.key == pygame.K_d:
-                p_right = False
-            if event.key == pygame.K_w:
-                p_up = False
-            if event.key == pygame.K_s:
-                p_down = False
-    
-    velocidade = 5
-    x = 0
-    y = 0
-    if p_left:
-        x = -velocidade
-    if p_right:
-        x = velocidade
-    if p_up:
-        y = -velocidade
-    if p_down:
-        y = velocidade
     if m1:
         now_w = pygame.time.get_ticks()
         if now_w - start_w >= 200:
@@ -120,12 +79,11 @@ while running:
             all_sprites.add(bala2)
             start_t = now_t
 
-    players.update(x,y)
+    p1.update(5)
+    camera.update(p1)
+
     tiros.update()
-    invasores.update(0,random.randint(1,2))
-
-
-    all_sprites.draw(screen)
+    invasores.update(0,0)
 
     col = pygame.sprite.groupcollide(tiros,invasores,True,True)
     for i in col:
@@ -134,5 +92,10 @@ while running:
         i = invasor(x_aleatorio,y_aleatorio)
         all_sprites.add(i)
         invasores.add(i)
+    
+    for i in all_sprites:
+        i.rect.x = camera.apply(i).x
+        i.rect.y = camera.apply(i).y
+        screen.blit(i.image, camera.apply(i))
 
     pygame.display.update()
