@@ -4,7 +4,6 @@ import random
 
 pygame.init()
 
-
 screen = pygame.display.set_mode((width,height))
 
 background = pygame.image.load("u.jpg")
@@ -13,19 +12,12 @@ pygame.display.set_caption("Jogo 1")
 icon = pygame.image.load("cirurgia-robotica.png")
 pygame.display.set_icon(icon)
 
-
-
-
 p1 = player('player.png',width/2,height/2) 
 players.add(p1)
-
 running = True
 
 clock = pygame.time.Clock()
 all_sprites.add(p1)
-
-
-
 
 start_t = pygame.time.get_ticks()
 start = pygame.time.get_ticks()
@@ -34,25 +26,19 @@ start_r = pygame.time.get_ticks()
 # instanciando camera
 camera = Camera(width,height)
 
+for i in range(10):
+    x_aleatorio = random.randint(0,width)
+    y_aleatorio = random.randint(0,height-180)
+    u = invasor(x_aleatorio,y_aleatorio)
+    all_sprites.add(u)
+    invasores.add(u)
+
 while running: 
     screen.blit(background,(0,0))
     clock.tick(120)
+    for sprite in all_sprites:
+        sprite.draw_hitbox(screen)
 
-
-    #for sprite in all_sprites:
-    # sprite.draw_hitbox(screen)
-
-    now = pygame.time.get_ticks()
-    if now-start >= 1000:
-        x_aleatorio = random.randint(0,width)
-        y_aleatorio = random.randint(0,height-180)
-        u = invasor(x_aleatorio,y_aleatorio)
-        all_sprites.add(u)
-        invasores.add(u)
-        start = now   
-
-
-    p1.rotate()
 
 
     m1 = pygame.mouse.get_pressed()[0]
@@ -62,6 +48,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+    
     if m1:
         now_w = pygame.time.get_ticks()
         if now_w - start_w >= 200:
@@ -93,6 +80,7 @@ while running:
         all_sprites.add(i)
         invasores.add(i)
     
+    p1.rotate()
     for i in all_sprites:
         i.rect.x = camera.apply(i).x
         i.rect.y = camera.apply(i).y
