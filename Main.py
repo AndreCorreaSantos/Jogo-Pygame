@@ -1,30 +1,26 @@
 import pygame
 from Classes import *
 import random
-
 pygame.init()
-
-screen = pygame.display.set_mode((width,height))
-
-mapa1 = map("u.jpg",0,0)
-mapas.add(mapa1)
-
+#mudando informações da janela
 pygame.display.set_caption("Jogo 1")
 icon = pygame.image.load("cirurgia-robotica.png")
+#iniciando tela
+screen = pygame.display.set_mode((width,height))
+mapa1 = map("u.jpg",0,0)
+mapas.add(mapa1)
+background = pygame.Surface((width*2,height*2))
 pygame.display.set_icon(icon)
-
 p1 = player('player.png',width/2,height/2)
 players.add(p1)
+#booleana para testar
 running = True
-
+#relogios
 clock = pygame.time.Clock()
-
-
 start_t = pygame.time.get_ticks()
 start = pygame.time.get_ticks()
 start_w = pygame.time.get_ticks()
 start_r = pygame.time.get_ticks()
-
 for i in range(10):
     x_aleatorio = random.randint(0,width)
     y_aleatorio = random.randint(0,height-180)
@@ -34,7 +30,8 @@ for i in range(10):
 
 while running: 
     clock.tick(120)
-
+    background.fill((0,0,0))
+    screen.blit(background,(0,0))
     m1 = pygame.mouse.get_pressed()[0]
     m2 = pygame.mouse.get_pressed()[2]
     m3 = pygame.mouse.get_pressed()[1]
