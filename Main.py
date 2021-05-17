@@ -4,14 +4,14 @@ import random
 pygame.init()
 #mudando informações da janela
 pygame.display.set_caption("Jogo 1")
-icon = pygame.image.load("cirurgia-robotica.png")
+icon = pygame.image.load("assets/cirurgia-robotica.png")
 #iniciando tela
 screen = pygame.display.set_mode((width,height))
-mapa1 = map("u.jpg",0,0)
+mapa1 = map("assets/u2.jpg",0,0)
 mapas.add(mapa1)
 background = pygame.Surface((width*2,height*2))
 pygame.display.set_icon(icon)
-p1 = player('player.png',width/2,height/2)
+p1 = player('assets/player.png',width/2,height/2)
 players.add(p1)
 #booleana para testar
 running = True
