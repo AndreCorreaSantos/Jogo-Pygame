@@ -12,22 +12,11 @@ class player(pygame.sprite.Sprite):
         self.original_image = pygame.transform.rotate(self.original_image,-90)
         self.image = self.original_image
         self.rect = self.image.get_rect()
+        self.offset = pygame.math.Vector2(50, 0)
         self.rect.center = (x,y)
+        self.px = 0
+        self.py = 0
         self.angle = 0
-    def update(self,v):
-        a = pygame.key.get_pressed()[pygame.K_a]
-        s = pygame.key.get_pressed()[pygame.K_s]
-        d = pygame.key.get_pressed()[pygame.K_d]
-        w = pygame.key.get_pressed()[pygame.K_w]
-        if a:
-            self.rect.x -= v
-        if s:
-            self.rect.y += v
-        if d:
-            self.rect.x += v
-        if w:
-            self.rect.y -= v
-
     def draw(self,screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
     def draw_hitbox(self,screen):
@@ -40,9 +29,6 @@ class player(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.original_image,self.angle)
         self.rect = self.image.get_rect()
         self.rect.center = old_center
-
-
-
 
 
 class tiro(pygame.sprite.Sprite):
@@ -94,34 +80,46 @@ class invasor(pygame.sprite.Sprite):
         screen.blit(self.image, (self.rect.x, self.rect.y))
     def draw_hitbox(self,screen):
         pygame.draw.rect(screen, (0,0,0), self.rect, 2)
-
-class Camera(object):
-    def __init__(self, width, height):
-        self.state = pygame.Rect(0, 0, width, height)
-        
-    def apply(self, target):
-        return target.rect.move(self.state.topleft)
-        
-    def update(self, target):
-        self.state = self.simple_camera(self.state, target.rect)
     
-    def simple_camera(self, camera, target_rect):
-        l, t, _, _ = target_rect # l = left,  t = top
-        _, _, w, h = camera      # w = width, h = height
-        return pygame.Rect(-l+HALF_WIDTH, -t+HALF_HEIGHT, w, h)
+class map(pygame.sprite.Sprite):
+    def __init__(self,imagem,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        imagem = pygame.image.load(imagem)
+        self.image = pygame.transform.scale(imagem,(width,height))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+    def draw(self,screen):
+        screen.blit(self.image,(self.rect.x,self.rect.y))
+
+def camera_update(player,velocidade_jogador):
+    a = pygame.key.get_pressed()[pygame.K_a]
+    s = pygame.key.get_pressed()[pygame.K_s]
+    d = pygame.key.get_pressed()[pygame.K_d]
+    w = pygame.key.get_pressed()[pygame.K_w]
+    vx = 0
+    vy = 0
+    if a:
+        vx = velocidade_jogador
+    if s:
+        vy = -velocidade_jogador
+    if d:
+        vx = -velocidade_jogador
+    if w:
+        vy = +velocidade_jogador
+    player.px += vx
+    player.py += vy
     
-    #def complex_camera(camera, target_rect):
-    #    x = -target_rect.center[0] + WIN_WIDTH/2 
-    #    y = -target_rect.center[1] + WIN_HEIGHT/2
-    #    camera.topleft += (pygame.Vector2((x, y)) - pygame.Vector2(camera.topleft)) * 0.06 # add some smoothness coolnes
+    return vx,vy
+def draw_hb(sprites,screen):
+    for i in sprites:
+        i.draw_hitbox(screen)
 
-    #    camera.x = max(-(camera.width-WIN_WIDTH), min(0, camera.x))
-    #    camera.y = max(-(camera.height-WIN_HEIGHT), min(0, camera.y))
-#
-    #    return camera
-
+        
+    
 
 tiros = pygame.sprite.Group()
 invasores = pygame.sprite.Group()
 players = pygame.sprite.Group()
+mapas = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
