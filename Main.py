@@ -6,25 +6,24 @@ pygame.init()
 
 screen = pygame.display.set_mode((width,height))
 
-background = pygame.image.load("u.jpg")
+mapa1 = map("u.jpg",0,0)
+mapas.add(mapa1)
 
 pygame.display.set_caption("Jogo 1")
 icon = pygame.image.load("cirurgia-robotica.png")
 pygame.display.set_icon(icon)
 
-p1 = player('player.png',width/2,height/2) 
+p1 = player('player.png',width/2,height/2)
 players.add(p1)
 running = True
 
 clock = pygame.time.Clock()
-all_sprites.add(p1)
+
 
 start_t = pygame.time.get_ticks()
 start = pygame.time.get_ticks()
 start_w = pygame.time.get_ticks()
 start_r = pygame.time.get_ticks()
-# instanciando camera
-camera = Camera(width,height)
 
 for i in range(10):
     x_aleatorio = random.randint(0,width)
@@ -34,12 +33,7 @@ for i in range(10):
     invasores.add(u)
 
 while running: 
-    screen.blit(background,(0,0))
     clock.tick(120)
-    for sprite in all_sprites:
-        sprite.draw_hitbox(screen)
-
-
 
     m1 = pygame.mouse.get_pressed()[0]
     m2 = pygame.mouse.get_pressed()[2]
@@ -66,24 +60,34 @@ while running:
             all_sprites.add(bala2)
             start_t = now_t
 
-    p1.update(5)
-    camera.update(p1)
+    vx,vy = camera_update(p1,5)
 
     tiros.update()
     invasores.update(0,0)
 
     col = pygame.sprite.groupcollide(tiros,invasores,True,True)
+
     for i in col:
         x_aleatorio = random.randint(0,width)
         y_aleatorio = random.randint(0,height-420)
         i = invasor(x_aleatorio,y_aleatorio)
         all_sprites.add(i)
         invasores.add(i)
+
+    mapa1.rect.x += vx
+    mapa1.rect.y += vy
+    mapa1.draw(screen)
+
+    for i in all_sprites:
+        i.rect.x += vx
+        i.rect.y += vy
+        i.draw(screen)
+    
     
     p1.rotate()
-    for i in all_sprites:
-        i.rect.x = camera.apply(i).x
-        i.rect.y = camera.apply(i).y
-        screen.blit(i.image, camera.apply(i))
+    p1.draw(screen)
+    #draw_hb(all_sprites,screen)
+    #p1.draw_hitbox(screen)
+
 
     pygame.display.update()
