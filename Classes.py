@@ -39,7 +39,7 @@ class player(pygame.sprite.Sprite):
 class tiro(pygame.sprite.Sprite):
     def __init__(self,player):
         pygame.sprite.Sprite.__init__(self)
-        im = pygame.image.load("bullet_1.png")
+        im = pygame.image.load("assets/bullet_1.png")
         self.original_image =  pygame.transform.scale(im, (30, 30))
         self.original_image = pygame.transform.rotate(self.original_image,-90)
         self.image = self.original_image
@@ -73,7 +73,7 @@ class tiro(pygame.sprite.Sprite):
 class invasor(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
-        im = pygame.image.load("i.png")
+        im = pygame.image.load("assets/i.png")
         self.image =  pygame.transform.scale(im, (100, 100))
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -89,8 +89,7 @@ class invasor(pygame.sprite.Sprite):
 class map(pygame.sprite.Sprite):
     def __init__(self,imagem,x,y):
         pygame.sprite.Sprite.__init__(self)
-        imagem = pygame.image.load(imagem)
-        self.image = pygame.transform.scale(imagem,(width,height))
+        self.image = pygame.image.load(imagem)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
