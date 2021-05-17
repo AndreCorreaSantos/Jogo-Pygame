@@ -35,8 +35,14 @@ class player(pygame.sprite.Sprite):
     def rotate(self):
         mouse_x, mouse_y = pygame.mouse.get_pos()
         rel_x,rel_y = mouse_x - self.rect.x, mouse_y - self.rect.y
-        self.angle =  ((180 / math.pi) * -math.atan2(rel_y, rel_x))
-        self.image = pygame.transform.rotate(self.original_image, self.angle)
+        self.angle = ((180 / math.pi) * -math.atan2(rel_y, rel_x))
+        old_center = self.rect.center
+        self.image = pygame.transform.rotate(self.original_image,self.angle)
+        self.rect = self.image.get_rect()
+        self.rect.center = old_center
+
+
+
 
 
 class tiro(pygame.sprite.Sprite):
@@ -104,6 +110,15 @@ class Camera(object):
         _, _, w, h = camera      # w = width, h = height
         return pygame.Rect(-l+HALF_WIDTH, -t+HALF_HEIGHT, w, h)
     
+    #def complex_camera(camera, target_rect):
+    #    x = -target_rect.center[0] + WIN_WIDTH/2 
+    #    y = -target_rect.center[1] + WIN_HEIGHT/2
+    #    camera.topleft += (pygame.Vector2((x, y)) - pygame.Vector2(camera.topleft)) * 0.06 # add some smoothness coolnes
+
+    #    camera.x = max(-(camera.width-WIN_WIDTH), min(0, camera.x))
+    #    camera.y = max(-(camera.height-WIN_HEIGHT), min(0, camera.y))
+#
+    #    return camera
 
 
 tiros = pygame.sprite.Group()
