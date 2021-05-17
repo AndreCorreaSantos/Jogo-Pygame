@@ -1,8 +1,9 @@
 import pygame
 import math
-
-width,height = 1920,1080
-HALF_WIDTH,HALF_HEIGHT = int(width/2),int(height/2)
+import ctypes
+user32 = ctypes.windll.user32
+screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+width,height = screensize[0],screensize[1]
 
 #jogador
 class player(pygame.sprite.Sprite):
@@ -29,6 +30,10 @@ class player(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.original_image,self.angle)
         self.rect = self.image.get_rect()
         self.rect.center = old_center
+
+
+
+
 
 
 class tiro(pygame.sprite.Sprite):
