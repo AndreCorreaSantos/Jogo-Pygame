@@ -3,8 +3,6 @@ import math
 import ctypes
 user32 = ctypes.windll.user32
 width,height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
-
-
 #jogador
 class player(pygame.sprite.Sprite):
     def __init__(self,image,x,y):
@@ -72,9 +70,17 @@ class invasor(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-    def update(self,v_x,v_y):
+    def update(self,v_x,v_y,mapa):
         self.rect.x += v_x
-        self.rect.y += v_y
+        self.rect.y += v_y 
+        if self.rect.x - mapa.rect.x <= 0:
+            self.kill()
+        if self.rect.x - mapa.rect.x >= mapa.rect.w-self.rect.w:
+            self.kill()
+        if self.rect.y - mapa.rect.y <= 0:
+            self.kill()
+        if self.rect.y - mapa.rect.y >= mapa.rect.h-self.rect.h:
+            self.kill()
     def draw(self,screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
     def draw_hitbox(self,screen):
