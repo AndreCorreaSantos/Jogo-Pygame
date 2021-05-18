@@ -26,7 +26,7 @@ start = pygame.time.get_ticks()
 start_w = pygame.time.get_ticks()
 start_r = pygame.time.get_ticks()
 #criando 10 invasores iniciais em cordenadas aleatorias da tela
-for i in range(10):
+for i in range(1):
     x_aleatorio = random.randint(0,width)
     y_aleatorio = random.randint(0,height-180)
     u = invasor(x_aleatorio,y_aleatorio)
@@ -64,7 +64,7 @@ while running:
             start_t = now_t
     #updatando invasore e tiros
     tiros.update()
-    invasores.update(0,1)
+    invasores.update(0,2,mapa1)
     #checando colisoes, aplicando colisoes e respawnando invasores
     col = pygame.sprite.groupcollide(tiros,invasores,True,True)
     for i in col:
@@ -90,9 +90,11 @@ while running:
             if testey:
                 i.rect.y += vy
             i.draw(screen)
+    
     #rotacionando jogador na direção do cursor do mouse e blitando ele na tela
     p1.rotate()
     p1.draw(screen)
+    
 
     #funcao para desenhar a hitbox dos sprites, debug
     #draw_hb(all_sprites,screen)
