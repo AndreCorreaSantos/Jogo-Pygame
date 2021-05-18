@@ -2,8 +2,8 @@ import pygame
 import math
 import ctypes
 user32 = ctypes.windll.user32
-screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
-width,height = screensize[0],screensize[1]
+width,height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+
 
 #jogador
 class player(pygame.sprite.Sprite):
@@ -30,11 +30,6 @@ class player(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.original_image,self.angle)
         self.rect = self.image.get_rect()
         self.rect.center = old_center
-
-
-
-
-
 
 class tiro(pygame.sprite.Sprite):
     def __init__(self,player):
@@ -69,7 +64,6 @@ class tiro(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.original_image, self.angle)
         self.rect = self.image.get_rect(center = self.rect.center)
 
-
 class invasor(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
@@ -95,8 +89,26 @@ class map(pygame.sprite.Sprite):
         self.rect.y = y
     def draw(self,screen):
         screen.blit(self.image,(self.rect.x,self.rect.y))
+    def draw_hitbox(self,screen):
+        pygame.draw.rect(screen, (0,0,0), self.rect, 2)
+    def offset(self):
+            testex = True 
+            testey = True
+            if self.rect.x >= 0:
+                self.rect.x = 0
+                testex = False
+            if self.rect.x <= width-self.rect.w:
+                self.rect.x = width-self.rect.w
+                testex = False
+            if self.rect.y <= height-self.rect.h:
+                self.rect.y = height-self.rect.h
+                testey = False
+            if self.rect.y >= 0:
+                self.rect.y = 0
+                testey = False
+            return testex,testey
 
-def camera_update(player,velocidade_jogador):
+def camera_update(velocidade_jogador):
     a = pygame.key.get_pressed()[pygame.K_a]
     s = pygame.key.get_pressed()[pygame.K_s]
     d = pygame.key.get_pressed()[pygame.K_d]
@@ -110,17 +122,11 @@ def camera_update(player,velocidade_jogador):
     if d:
         vx = -velocidade_jogador
     if w:
-        vy = +velocidade_jogador
-    player.px += vx
-    player.py += vy
-    
+        vy = +velocidade_jogador 
     return vx,vy
 def draw_hb(sprites,screen):
     for i in sprites:
         i.draw_hitbox(screen)
-
-        
-    
 
 tiros = pygame.sprite.Group()
 invasores = pygame.sprite.Group()
