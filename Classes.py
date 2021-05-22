@@ -1,6 +1,7 @@
 import pygame
 import math
 import ctypes
+import random
 user32 = ctypes.windll.user32
 width,height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 #jogador
@@ -13,8 +14,8 @@ class player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.offset = pygame.math.Vector2(50, 0)
         self.rect.center = (x,y)
-        self.px = 0
-        self.py = 0
+        #self.px = 0
+        #self.py = 0
         self.angle = 0
     def draw(self,screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
@@ -28,6 +29,17 @@ class player(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.original_image,self.angle)
         self.rect = self.image.get_rect()
         self.rect.center = old_center
+    def update(self,vx,vy):
+        up,down,left,right = 0,height,0,width
+        if up < self.rect.y + vy:
+            self.rect.y += vy
+        if down > self.rect.y +vy:
+            self.rect.y += vy
+        if self.rect.x + vx > -25:
+            self.rect.x += vx
+        if self.rect.x + vx < width:
+            self.rect.x += vx
+
 
 class tiro(pygame.sprite.Sprite):
     def __init__(self,player):
@@ -63,28 +75,45 @@ class tiro(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = self.rect.center)
 
 class invasor(pygame.sprite.Sprite):
-    def __init__(self,x,y):
+    def __init__(self,x,y,vx,vy):
         pygame.sprite.Sprite.__init__(self)
         im = pygame.image.load("assets/i.png")
         self.image =  pygame.transform.scale(im, (100, 100))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-    def update(self,v_x,v_y,mapa):
+        self.vx = vx
+        self.vy = vy
+    def update(self,mapa):
+        v_x = self.vx
+        v_y = self.vy
+        if self.rect.x - mapa.rect.x <= 0:
+            v_x = -v_x
+            self.vx = v_x
+        if self.rect.x - mapa.rect.x >= mapa.rect.w-self.rect.w:
+            v_x = -v_x
+            self.vx = v_x
+        if self.rect.y - mapa.rect.y <= 0:
+            v_y = -v_y
+            self.vy = v_y
+        if self.rect.y - mapa.rect.y >= mapa.rect.h-self.rect.h:
+            v_y = -v_y
+            self.vy = v_y
         self.rect.x += v_x
         self.rect.y += v_y 
-        if self.rect.x - mapa.rect.x <= 0:
-            self.kill()
-        if self.rect.x - mapa.rect.x >= mapa.rect.w-self.rect.w:
-            self.kill()
-        if self.rect.y - mapa.rect.y <= 0:
-            self.kill()
-        if self.rect.y - mapa.rect.y >= mapa.rect.h-self.rect.h:
-            self.kill()
     def draw(self,screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
     def draw_hitbox(self,screen):
         pygame.draw.rect(screen, (0,0,0), self.rect, 2)
+    #funcao que spawna invasores em packs em lugares aleatorios da tela.
+    def spawn(mapa):
+        #ponto = (random.randint(0,width),random.randint(0,height))
+        ponto = (mapa.rect.x+400,mapa.rect.y+400)
+        v_inicial = (random.randint(-5,5),random.randint(-5,5))
+        u = invasor(ponto[0],ponto[1],v_inicial[0],v_inicial[1])
+        invasores.add(u)
+
+
     
 class map(pygame.sprite.Sprite):
     def __init__(self,imagem,x,y):
@@ -98,21 +127,24 @@ class map(pygame.sprite.Sprite):
     def draw_hitbox(self,screen):
         pygame.draw.rect(screen, (0,0,0), self.rect, 2)
     def offset(self):
-            testex = True 
-            testey = True
-            if self.rect.x >= 0:
-                self.rect.x = 0
-                testex = False
-            if self.rect.x <= width-self.rect.w:
-                self.rect.x = width-self.rect.w
-                testex = False
-            if self.rect.y <= height-self.rect.h:
-                self.rect.y = height-self.rect.h
-                testey = False
-            if self.rect.y >= 0:
-                self.rect.y = 0
-                testey = False
-            return testex,testey
+        testex = True 
+        testey = True
+        if self.rect.x >= 0:
+            self.rect.x = 0
+            testex = False
+        if self.rect.x <= width-self.rect.w:
+            self.rect.x = width-self.rect.w
+            testex = False
+        if self.rect.y <= height-self.rect.h:
+            self.rect.y = height-self.rect.h
+            testey = False
+        if self.rect.y >= 0:
+            self.rect.y = 0
+            testey = False
+        return testex,testey
+    def update(self,v1,v2):
+        self.rect.x += v1
+        self.rect.y += v2
 
 def camera_update(velocidade_jogador):
     a = pygame.key.get_pressed()[pygame.K_a]
@@ -128,7 +160,7 @@ def camera_update(velocidade_jogador):
     if d:
         vx = -velocidade_jogador
     if w:
-        vy = +velocidade_jogador 
+        vy = velocidade_jogador 
     return vx,vy
 def draw_hb(sprites,screen):
     for i in sprites:
