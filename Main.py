@@ -94,6 +94,13 @@ while running:
             v1y = 0
             i.rotate()
             i.draw(screen)
+        elif type(i) == invasor:
+            if testex:
+                i.rect.x += vx
+            if testey:
+                i.rect.y += vy
+            i.move_towards_player(p1)
+            i.draw(screen)
         else:
             if testex:
                 i.rect.x += vx
@@ -112,6 +119,6 @@ while running:
     screen.blit(textsurface,(0,0))
     
     #funcao para desenhar a hitbox dos sprites, debug
-    #draw_hb(all_sprites,screen)
-    #p1.draw_hitbox(screen)
+    draw_hb(all_sprites,screen)
+    p1.draw_hitbox(screen)
     pygame.display.update()

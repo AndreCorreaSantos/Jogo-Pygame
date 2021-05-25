@@ -4,6 +4,10 @@ import ctypes
 import random
 user32 = ctypes.windll.user32
 width,height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+
+#constantes boid
+raio_grupo = 50
+v_inv = 5
 #jogador
 class player(pygame.sprite.Sprite):
     def __init__(self,image,x,y):
@@ -30,7 +34,7 @@ class player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = old_center
     def update(self,vx,vy):
-        up,down,left,right = 0,height,0,width
+        up,down = 0,height,0,width
         if up < self.rect.y + vy:
             self.rect.y += vy
         if down > self.rect.y +vy:
@@ -108,10 +112,49 @@ class invasor(pygame.sprite.Sprite):
     #funcao que spawna invasores em packs em lugares aleatorios da tela.
     def spawn(mapa):
         #ponto = (random.randint(0,width),random.randint(0,height))
-        ponto = (mapa.rect.x+400,mapa.rect.y+400)
+        ponto = (mapa.rect.x+50,mapa.rect.y+50)
         v_inicial = (random.randint(-5,5),random.randint(-5,5))
         u = invasor(ponto[0],ponto[1],v_inicial[0],v_inicial[1])
         invasores.add(u)
+
+    def dist(self,next):
+        distx = (self.rect.x - next.rect.x)**2
+        disty = (self.rect.y - next.rect.y)**2
+        return math.sqrt(distx + disty)
+
+    #def average_pos_near(self,group):
+    #    len_grupo = 0
+    #    avgx = 0
+    #    avgy = 0
+    #    for i in group:
+    #        if self.dist(i) <= raio_grupo:
+    #            avgx += i.rect.x
+    #            avgy += i.rect.y
+    #            len_grupo += 1
+    #    avgx = avgx/len_grupo
+    #    avgy = avgy/len_grupo
+    #    return avgx,avgy
+    #def steer(self,posx,posy):
+    #    ang = math.atan2(posx,posy)
+    #    self.vx = -math.cos(ang)*velocidade_unitaria_invasores
+    #    self.vy = -math.sin(ang)*velocidade_unitaria_invasores
+    def move_towards_player(self, player):
+        # Find direction vector (dx, dy) between enemy and player.
+        dx, dy = player.rect.x - self.rect.x, player.rect.y - self.rect.y
+        dist = math.hypot(dx, dy)
+        if dist == 0:
+            dist = 1
+        dx, dy = dx / dist, dy / dist  # Normalize.
+        # Move along this normalized vector towards the player at current speed.
+        self.rect.x += dx * v_inv
+        self.rect.y += dy * v_inv
+
+
+
+
+
+
+
 
 
     
