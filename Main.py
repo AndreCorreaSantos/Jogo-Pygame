@@ -54,8 +54,8 @@ while running:
     if button2.collidepoint((mx,my)):
         if click:
             pass
-    pygame.draw.rect(screen,(255,0,0),button1)
-    pygame.draw.rect(screen,(255,0,0),button2)
+    pygame.draw.rect(screen,(75, 0, 130),button1)
+    pygame.draw.rect(screen,(75, 0, 130),button2)
 
     #checando quit
     for event in pygame.event.get():
