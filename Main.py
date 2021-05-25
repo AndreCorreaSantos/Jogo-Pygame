@@ -37,25 +37,53 @@ for i in range(50):
 conta_kills = 0
 click = False
 start = False
+menu = True
+pygame.font.init()
+myfont = pygame.font.SysFont("Arial",50)
 
-while running: 
-    #inicializando clock que cuida do fps
+
+while running:
     background.fill((0,0,0))
-    screen.blit(background,(0,0))
-    #construindo menu
-    button_width = 500
-    button_height = 100
-    mx,my = pygame.mouse.get_pos()
-    button1 = pygame.Rect(width/2-button_width/2,height/2-button_height/2-100,button_width,button_height)
-    button2 = pygame.Rect(width/2-button_width/2,height/2-button_height/2+100,button_width,button_height)
-    if button1.collidepoint((mx,my)):
-        if click:
-            start = True
-    if button2.collidepoint((mx,my)):
-        if click:
-            pass
-    pygame.draw.rect(screen,(75, 0, 130),button1)
-    pygame.draw.rect(screen,(75, 0, 130),button2)
+    screen.blit(background,(0,0)) 
+    if menu:
+        #construindo menu
+        button_width = 500
+        button_height = 100
+
+        button1_x = width/2-button_width/2
+        button1_y = height/2-button_height/2 - 200
+
+        button2_x = button1_x
+        button2_y = button1_y + 200
+
+        button3_x = button1_x
+        button3_y = button2_y + 200
+
+        text_1 = myfont.render("Start new game",False,(0,0,0))
+        text_2 = myfont.render("Load saved game",False,(0,0,0))
+        text_3 = myfont.render("options",False,(0,0,0))
+
+        mx,my = pygame.mouse.get_pos()
+        button1 = pygame.Rect(button1_x,button1_y,button_width,button_height)
+        button2 = pygame.Rect(button2_x,button2_y,button_width,button_height)
+        button3 = pygame.Rect(button3_x,button3_y,button_width,button_height)
+        if button1.collidepoint((mx,my)):
+            if click:
+                start = True
+                menu = False
+        if button2.collidepoint((mx,my)):
+            if click:
+                pass
+        if button3.collidepoint((mx,my)):
+            if click:
+                pass
+        pygame.draw.rect(screen,(75, 0, 130),button1)
+        pygame.draw.rect(screen,(75, 0, 130),button2)
+        pygame.draw.rect(screen,(75, 0, 130),button3)
+
+        screen.blit(text_1,(button1_x,button1_y))
+        screen.blit(text_2,(button2_x,button2_y))
+        screen.blit(text_3,(button3_x,button3_y))
 
     #checando quit
     for event in pygame.event.get():
@@ -133,8 +161,6 @@ while running:
         if conta_kills > 100:
             mapa = mapa3
 
-        pygame.font.init()
-        myfont = pygame.font.SysFont("Arial",50)
         textsurface = myfont.render("Kills: {}".format(conta_kills),False,(0,0,0))
         screen.blit(textsurface,(0,0))
 
