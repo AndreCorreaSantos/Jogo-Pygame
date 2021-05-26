@@ -16,7 +16,9 @@ class player(pygame.sprite.Sprite):
         self.original_image = pygame.transform.rotate(self.original_image,-90)
         self.image = self.original_image
         self.rect = self.image.get_rect()
-        self.pos = (x,y)
+        self.rect.x = x
+        self.rect.y = y
+        self.rect.center = (self.rect.x,self.rect.y)
         self.angle = 0
     def draw(self,screen):
         screen.blit(self.image, (self.rect.center[0]-int(self.image.get_width()/2), self.rect.center[1]-self.image.get_height()/2))
@@ -27,19 +29,14 @@ class player(pygame.sprite.Sprite):
         rel_x,rel_y = mouse_x - self.rect.center[0], mouse_y - self.rect.center[1]
         self.angle = ((180 / math.pi) * -math.atan2(rel_y, rel_x))
         self.image = pygame.transform.rotate(self.original_image,self.angle)
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-    #def update(self,vx,vy):
-    #    up,down = 0,height,0,width
-    #    if up < self.rect.y + vy:
-    #        self.rect.y += vy
-    #    if down > self.rect.y +vy:
-    #        self.rect.y += vy
-    #    if self.rect.x + vx > -25:
-    #        self.rect.x += vx
-    #    if self.rect.x + vx < width:
-    #        self.rect.x += vx
-
+    def update(self,vx,vy):
+        if self.rect.x + vx > width -self.rect.w or self.rect.x + vx < 0:
+            vx = 0
+        if self.rect.y + vy > height-self.rect.h or self.rect.y + vy < 0:
+            vy = 0
+        self.rect.x += vx
+        self.rect.y += vy
+        self.pos = (self.rect.x,self.rect.y)
 
 class tiro(pygame.sprite.Sprite):
     def __init__(self,player):
@@ -144,11 +141,6 @@ class invasor(pygame.sprite.Sprite):
         # Move along this normalized vector towards the player at current speed.
         self.rect.x += dx * v_inv
         self.rect.y += dy * v_inv
-
-
-
-
-
     
 class map(pygame.sprite.Sprite):
     def __init__(self,imagem,x,y):

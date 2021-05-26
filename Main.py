@@ -73,7 +73,8 @@ while running:
                 menu = False
         if button2.collidepoint((mx,my)):
             if click:
-                pass
+                dammic = pygame.image.load("assets/x.jpg")
+                screen.blit(dammic,(0,0))
         if button3.collidepoint((mx,my)):
             if click:
                 pass
@@ -114,9 +115,9 @@ while running:
                 all_sprites.add(bala2)
                 start_t = now_t
         #updatando invasore e tiros
-        tiros.update()
         for i in invasores:
             i.update(mapa)
+        tiros.update()
             #print(i.rect.x)
         #print(len(invasores))
         #checando colisoes, aplicando colisoes e respawnando invasores
@@ -130,30 +131,44 @@ while running:
             conta_kills += 1
         #recebendo e aplicando os parametros para fazer o offset da camera
         velocidade = 6
-        vx,vy = camera_update(velocidade)
+        scroll = [0,0]
+        scroll[0] = int((p1.rect.x-scroll[0]-width/2+p1.rect.w/2)/15)
+        scroll[1] = int((p1.rect.y- scroll[1]-height/2+p1.rect.h/2)/15)
+        vpx,vpy = camera_update(velocidade)
         #booleanas para saber se o mapa atingiu limite x ou y do mapa e entao parar de aplicar o offset nas outras entidades.
         testex,testey = mapa.offset()
-        mapa.rect.x += vx
-        mapa.rect.y += vy
-        mapa.draw(screen)   
+        #mapa.rect.x += vx
+        #mapa.rect.y += vy
+        mapa.draw(screen)
+        scroll[0] = -scroll[0]
+        scroll[1] = -scroll[1]
+        mapa.rect.x += scroll[0]
+        mapa.rect.y += scroll[1]
         for i in all_sprites:
             if type(i) == player:
+                i.update(-vpx,-vpy)
                 i.rotate()
+                if testex:
+                    i.rect.x += scroll[0]
+                if testey:
+                    i.rect.y += scroll[1]
                 i.draw(screen)
             elif type(i) == invasor:
                 if testex:
-                    i.rect.x += vx
+                    i.rect.x += scroll[0]
                 if testey:
-                    i.rect.y += vy
+                 i.rect.y += scroll[1]
                 i.move_towards_player(p1)
-                i.draw(screen)
+                #i.draw(screen)
+                screen.blit(i.image,(i.rect.x+scroll[0],i.rect.y+scroll[1]))
             else:
                 if testex:
-                    i.rect.x += vx
+                    i.rect.x += scroll[0]
                 if testey:
-                    i.rect.y += vy
-                i.draw(screen)
-
+                    i.rect.y += scroll[1]
+                #i.draw(screen)
+                screen.blit(i.image,(i.rect.x+scroll[0],i.rect.y+scroll[1]))
+        #troca mapa
         if conta_kills > 50:
             mapa = mapa2
         if conta_kills > 100:
@@ -163,6 +178,7 @@ while running:
         screen.blit(textsurface,(0,0))
 
         #funcao para desenhar a hitbox dos sprites, debug
-        draw_hb(all_sprites,screen)
-        p1.draw_hitbox(screen)
+        #draw_hb(all_sprites,screen)
+        #p1.draw_hitbox(screen)
+        #pygame.draw.circle(screen, (0, 0, 0), (width/2, height/2), 10) #--> centro da tela
     pygame.display.update()
