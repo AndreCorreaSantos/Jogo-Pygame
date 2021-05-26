@@ -49,7 +49,7 @@ class tiro(pygame.sprite.Sprite):
         self.rect.x = player.rect.center[0]
         self.rect.y = player.rect.center[1]
         m_x,m_y = pygame.mouse.get_pos()
-        vr = 20
+        vr = 30
         dx = player.rect.center[0] - m_x
         dy = player.rect.center[1] - m_y
         ang = math.atan2(dy,dx)

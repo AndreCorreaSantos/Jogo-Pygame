@@ -41,7 +41,9 @@ menu = True
 pygame.font.init()
 myfont = pygame.font.SysFont("Arial",50)
 
-
+#lista de particulas [loc,velocity,timer]
+particles = []
+remove = []
 while running:
     background.fill((0,0,0))
     screen.blit(background,(0,0)) 
@@ -100,7 +102,7 @@ while running:
         m3 = pygame.mouse.get_pressed()[1]
         if m1:
             now_w = pygame.time.get_ticks()
-            if now_w - start_w >= 100:
+            if now_w - start_w >= 300:
                 bala = tiro(p1)
                 bala.rotate()
                 tiros.add(bala)
@@ -108,7 +110,7 @@ while running:
                 start_w = now_w
         if m2:
             now_t = pygame.time.get_ticks()
-            if now_t - start_t >= 100:
+            if now_t - start_t >= 300:
                 bala2 = tiro(p1)
                 bala2.rotate()
                 tiros.add(bala2)
@@ -123,13 +125,15 @@ while running:
         #checando colisoes, aplicando colisoes e respawnando invasores
         col = pygame.sprite.groupcollide(tiros,invasores,True,True)
         for i in col:
+            for u in range(50):
+                particles.append([[i.rect.x,i.rect.y],[random.randint(0,20)/10 - 1,random.randint(-40,-20)*0.1],random.randint(7,14),random.randint(0,222)])
             x_aleatorio = mapa.rect.x+400
             y_aleatorio = mapa.rect.y+400
             i = invasor(x_aleatorio,y_aleatorio,random.randint(-5,5),random.randint(-5,5))
             all_sprites.add(i)
             invasores.add(i)
             conta_kills += 1
-        #recebendo e aplicando os parametros para fazer o offset da camera
+                    #recebendo e aplicando os parametros para fazer o offset da camera
         velocidade = 6
         scroll = [0,0]
         scroll[0] = int((p1.rect.x-scroll[0]-width/2+p1.rect.w/2)/15)
@@ -168,6 +172,27 @@ while running:
                     i.rect.y += scroll[1]
                 #i.draw(screen)
                 screen.blit(i.image,(i.rect.x+scroll[0],i.rect.y+scroll[1]))
+        
+        for particle in particles:
+            if testex:
+                particle[0][0] += particle[1][0] + scroll[0]
+            else:
+                particle[0][0] += particle[1][0]
+            if testey:
+                particle[0][1] += particle[1][1] + scroll[1]
+            else:
+                particle[0][1] += particle[1][1]
+            particle[2] -= 0.2
+            particle[1][1] += 0.1
+            c = particle[3]
+            pygame.draw.circle(screen, (c,c,c), [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+            if particle[2] <= 0:
+                #remove.append(particles.index(particle))
+                particles.remove(particle)
+        #for particle_index in remove:
+        #    particles.remove(particles[particle_index])
+       # remove = []
+
         #troca mapa
         if conta_kills > 50:
             mapa = mapa2
