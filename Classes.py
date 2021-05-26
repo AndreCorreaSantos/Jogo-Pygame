@@ -16,33 +16,29 @@ class player(pygame.sprite.Sprite):
         self.original_image = pygame.transform.rotate(self.original_image,-90)
         self.image = self.original_image
         self.rect = self.image.get_rect()
-        self.offset = pygame.math.Vector2(50, 0)
-        self.rect.center = (x,y)
-        #self.px = 0
-        #self.py = 0
+        self.pos = (x,y)
         self.angle = 0
     def draw(self,screen):
-        screen.blit(self.image, (self.rect.x, self.rect.y))
+        screen.blit(self.image, (self.rect.center[0]-int(self.image.get_width()/2), self.rect.center[1]-self.image.get_height()/2))
     def draw_hitbox(self,screen):
         pygame.draw.rect(screen, (0,0,0), self.rect, 2)
     def rotate(self):
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        rel_x,rel_y = mouse_x - self.rect.x, mouse_y - self.rect.y
+        rel_x,rel_y = mouse_x - self.rect.center[0], mouse_y - self.rect.center[1]
         self.angle = ((180 / math.pi) * -math.atan2(rel_y, rel_x))
-        old_center = self.rect.center
         self.image = pygame.transform.rotate(self.original_image,self.angle)
         self.rect = self.image.get_rect()
-        self.rect.center = old_center
-    def update(self,vx,vy):
-        up,down = 0,height,0,width
-        if up < self.rect.y + vy:
-            self.rect.y += vy
-        if down > self.rect.y +vy:
-            self.rect.y += vy
-        if self.rect.x + vx > -25:
-            self.rect.x += vx
-        if self.rect.x + vx < width:
-            self.rect.x += vx
+        self.rect.center = self.pos
+    #def update(self,vx,vy):
+    #    up,down = 0,height,0,width
+    #    if up < self.rect.y + vy:
+    #        self.rect.y += vy
+    #    if down > self.rect.y +vy:
+    #        self.rect.y += vy
+    #    if self.rect.x + vx > -25:
+    #        self.rect.x += vx
+    #    if self.rect.x + vx < width:
+    #        self.rect.x += vx
 
 
 class tiro(pygame.sprite.Sprite):
@@ -148,10 +144,6 @@ class invasor(pygame.sprite.Sprite):
         # Move along this normalized vector towards the player at current speed.
         self.rect.x += dx * v_inv
         self.rect.y += dy * v_inv
-
-
-
-
 
 
 

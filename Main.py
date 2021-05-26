@@ -138,8 +138,6 @@ while running:
         mapa.draw(screen)   
         for i in all_sprites:
             if type(i) == player:
-                v1x = 0
-                v1y = 0
                 i.rotate()
                 i.draw(screen)
             elif type(i) == invasor:
