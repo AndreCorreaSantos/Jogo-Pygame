@@ -74,7 +74,7 @@ class tiro(pygame.sprite.Sprite):
 class invasor(pygame.sprite.Sprite):
     def __init__(self,x,y,vx,vy):
         pygame.sprite.Sprite.__init__(self)
-        im = pygame.image.load("assets/i.png")
+        im = pygame.image.load("assets/boss.png")
         self.image =  pygame.transform.scale(im, (100, 100))
         self.rect = self.image.get_rect()
         self.rect.x = x
