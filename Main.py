@@ -1,6 +1,7 @@
 import pygame
 from Classes import *
 import random
+
 pygame.init()
 #mudando informações da janela
 pygame.display.set_caption("Jogo 1")
@@ -8,7 +9,9 @@ icon = pygame.image.load("assets/cirurgia-robotica.png")
 
 #iniciando tela,jogador e mapa
 def main():
+    clock = pygame.time.Clock()
     screen = pygame.display.set_mode((width,height))
+    screen.set_alpha(None)
     mapa1 = map("assets/j.jpg",0,0)
     mapa2 = map("assets/u2.jpg",0,0)
     mapa3 = map("assets/j2.jpg",0,0)
@@ -22,45 +25,46 @@ def main():
     all_sprites.add(p1)
     vidas = 3
     c = 0
-
     #pygame.mixer.music.load("assets/musica.wav")
     #pygame.mixer.music.play()
-
     #booleana para poder sair do jogo
-    running = True
     options = False
     #relogios
     start = pygame.time.get_ticks()
     start_w = pygame.time.get_ticks()
     relogio = pygame.time.get_ticks()
     #criando 10 invasores iniciais em cordenadas aleatorias da tela
-
-
-
     conta_kills = 0
     start = False
     menu = True
     menu_2 = False
     game_over = False
-
     pygame.font.init()
     myfont = pygame.font.SysFont("Arial",50)
-
     #lista de particulas [loc,velocity,timer]
     particles = []
-    
     vida = pygame.image.load("assets/vida.png")
     vida = pygame.transform.scale(vida,(64,64))
     v_rect = vida.get_rect().width
-
     numero_invasores= 10
-
-    while running:
+    while (1):
+        fps = str(int(clock.get_fps()))
+        fps_text = myfont.render(str(fps),False,(255,255,255))
+        screen.blit(fps_text,(0,height))
         background.fill((0,0,0))
-        screen.blit(background,(0,0)) 
+        screen.blit(background,(0,0))
+        apertado = pygame.mouse.get_pressed()[0]
+        mouse = pygame.mouse.get_pos()
 
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    if start == True:
+                        start = False
+                        menu = True
+                        menu_2 = True
+        
         if menu:
-            m1 = pygame.mouse.get_pressed()[0]
             #construindo menu
             button_width = 500
             button_height = 100
@@ -87,36 +91,34 @@ def main():
                 text_3 = myfont.render("Quit Game",False,(0,0,0))
 
 
-            mx,my = pygame.mouse.get_pos()
-
             button1 = pygame.Rect(button1_x,button1_y,button_width,button_height)
             button2 = pygame.Rect(button2_x,button2_y,button_width,button_height)
             button3 = pygame.Rect(button3_x,button3_y,button_width,button_height)
 
-            if button1.collidepoint((mx,my)):
-                if m1:
+            if button1.collidepoint(mouse):
+                if apertado:
                     start = True
                     menu = False
-                    m1 = False
-            if button2.collidepoint((mx,my)):
-                if m1:
+                    apertado = False
+            if button2.collidepoint(mouse):
+                if apertado:
                     options = True
                     menu = False
-                    m1 = False
+                    apertado = False
             if menu_2:
-                if button3.collidepoint((mx,my)):
+                if button3.collidepoint(mouse):
                     relogio2 = pygame.time.get_ticks()
                     tempo = relogio2 - relogio
-                    if m1 and tempo > 200:
+                    if apertado and tempo > 200:
                         p1.kill()
-                        m1 = False
+                        apertado = False
                         relogio = pygame.time.get_ticks()
                         return
             if menu and not menu_2:
-                if button3.collidepoint((mx,my)):
+                if button3.collidepoint(mouse):
                     relogio2 = pygame.time.get_ticks()
                     tempo = relogio2 - relogio
-                    if m1 and tempo > 200:
+                    if apertado and tempo > 200:
                         pygame.quit()
 
             pygame.draw.rect(screen,(75, 0, 130),button1)
@@ -129,19 +131,7 @@ def main():
 
 
         #checando quit
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    start = False
-                    menu = True
-                    menu_2 = True
-
-
         if options:
-            mouse = pygame.mouse.get_pos()
-            apertado = pygame.mouse.get_pressed()[0]
 
             volume_label_width = 500
             volume_label_height = 100
@@ -169,7 +159,7 @@ def main():
             screen.blit(volume_label2_text,(volume_label2_x,volume_label2_y))
             screen.blit(return_text,(return_x,return_y))
 
-            if return_rect.collidepoint((mouse)) and apertado:
+            if return_rect.collidepoint(mouse) and apertado:
                 relogio = pygame.time.get_ticks()
                 options = False
                 menu = True
@@ -178,8 +168,8 @@ def main():
 
         if start == True:
             #checando eventos criando tiros
-            m1 = pygame.mouse.get_pressed()[0]
-            if m1:
+
+            if apertado:
                 now_w = pygame.time.get_ticks()
                 if now_w - start_w >= 150:
                     bala = tiro(p1)
@@ -187,8 +177,10 @@ def main():
                     tiros.add(bala)
                     all_sprites.add(bala)
                     start_w = now_w
+
             col = pygame.sprite.groupcollide(tiros,invasores,True,True)
             col2 = pygame.sprite.groupcollide(players,invasores,False,True)
+
             for i in col:
                 for u in range(50):
                     particles.append([[i.rect.x,i.rect.y],[random.randint(0,20)/10 - 1,random.randint(-40,-20)*0.1],random.randint(7,14),random.randint(0,222)])
@@ -225,7 +217,7 @@ def main():
             mapa.rect.y += scroll[1]
 
             while len(invasores)  < numero_invasores:
-                u = invasor(random.randint(100,2000),random.randint(100,2000),random.randint(2,5),random.randint(2,5))
+                u = invasor(random.randint(100,2000),random.randint(100,2000),random.randint(2,3),random.randint(2,3))
                 invasores.add(u)
                 all_sprites.add(u)
 
@@ -281,6 +273,9 @@ def main():
             textsurface = myfont.render("Kills: {}".format(conta_kills),False,(0,0,0))
             screen.blit(textsurface,(0,0))
 
+            fps = myfont.render(str(int(clock.get_fps())), True, pygame.Color('white'))
+            screen.blit(fps,(0,100))
+
             if not vidas:
                 start = False
                 game_over = True
@@ -289,15 +284,12 @@ def main():
             #funcao para desenhar a hitbox dos sprites, debug
             #draw_hb(all_sprites,screen)
             #p1.draw_hitbox(screen)
-            #pygame.draw.circle(screen, (0, 0, 0), (width/2, height/2), 10) #--> centro da tela
             if game_over == True:
                 start = False
                 menu_2 = False
                 p1.kill()
 
         if game_over:
-            mouse = pygame.mouse.get_pos()
-            apertado = pygame.mouse.get_pressed()[0]
 
             game_over_width = 800
             game_over_height = 100
@@ -334,8 +326,10 @@ def main():
                 return
             if choice2_rect.collidepoint(mouse) and apertado:
                 pygame.quit()
+        clock.tick(200)
 
-        pygame.display.update()
+        pygame.display.flip()
 
-while True:
+
+while (1):
     main()

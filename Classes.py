@@ -177,6 +177,11 @@ def draw_hb(sprites,screen):
     for i in sprites:
         i.draw_hitbox(screen)
 
+def update_fps():
+	fps = str(int(pygame.clock.get_fps()))
+	fps_text = myfont.render(fps, 1, pygame.Color("coral"))
+	return fps_text
+
 tiros = pygame.sprite.Group()
 invasores = pygame.sprite.Group()
 players = pygame.sprite.Group()
