@@ -115,22 +115,6 @@ class invasor(pygame.sprite.Sprite):
         disty = (self.rect.y - next.rect.y)**2
         return math.sqrt(distx + disty)
 
-    #def average_pos_near(self,group):
-    #    len_grupo = 0
-    #    avgx = 0
-    #    avgy = 0
-    #    for i in group:
-    #        if self.dist(i) <= raio_grupo:
-    #            avgx += i.rect.x
-    #            avgy += i.rect.y
-    #            len_grupo += 1
-    #    avgx = avgx/len_grupo
-    #    avgy = avgy/len_grupo
-    #    return avgx,avgy
-    #def steer(self,posx,posy):
-    #    ang = math.atan2(posx,posy)
-    #    self.vx = -math.cos(ang)*velocidade_unitaria_invasores
-    #    self.vy = -math.sin(ang)*velocidade_unitaria_invasores
     def move_towards_player(self, player):
         # Find direction vector (dx, dy) between enemy and player.
         dx, dy = player.rect.x - self.rect.x, player.rect.y - self.rect.y

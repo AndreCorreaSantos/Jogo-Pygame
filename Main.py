@@ -32,6 +32,7 @@ def main():
     #relogios
     start = pygame.time.get_ticks()
     start_w = pygame.time.get_ticks()
+    relogio = pygame.time.get_ticks()
     #criando 10 invasores iniciais em cordenadas aleatorias da tela
 
 
@@ -41,12 +42,13 @@ def main():
     menu = True
     menu_2 = False
     game_over = False
+
     pygame.font.init()
     myfont = pygame.font.SysFont("Arial",50)
 
     #lista de particulas [loc,velocity,timer]
     particles = []
-    #variavel para abrir menu no meio do jogo
+    
     vida = pygame.image.load("assets/vida.png")
     vida = pygame.transform.scale(vida,(64,64))
     v_rect = vida.get_rect().width
@@ -56,6 +58,7 @@ def main():
     while running:
         background.fill((0,0,0))
         screen.blit(background,(0,0)) 
+
         if menu:
             m1 = pygame.mouse.get_pressed()[0]
             #construindo menu
@@ -77,9 +80,15 @@ def main():
                 text_1 = myfont.render("Start new Game",False,(0,0,0))
 
             text_2 = myfont.render("Options",False,(0,0,0))
-            text_3 = myfont.render("Main menu",False,(0,0,0))
+
+            if menu_2:
+                text_3 = myfont.render("Main menu",False,(0,0,0))
+            else:
+                text_3 = myfont.render("Quit Game",False,(0,0,0))
+
 
             mx,my = pygame.mouse.get_pos()
+
             button1 = pygame.Rect(button1_x,button1_y,button_width,button_height)
             button2 = pygame.Rect(button2_x,button2_y,button_width,button_height)
             button3 = pygame.Rect(button3_x,button3_y,button_width,button_height)
@@ -88,23 +97,35 @@ def main():
                 if m1:
                     start = True
                     menu = False
+                    m1 = False
             if button2.collidepoint((mx,my)):
                 if m1:
                     options = True
+                    menu = False
+                    m1 = False
             if menu_2:
                 if button3.collidepoint((mx,my)):
-                    if m1:
+                    relogio2 = pygame.time.get_ticks()
+                    tempo = relogio2 - relogio
+                    if m1 and tempo > 200:
                         p1.kill()
+                        m1 = False
+                        relogio = pygame.time.get_ticks()
                         return
+            if menu and not menu_2:
+                if button3.collidepoint((mx,my)):
+                    relogio2 = pygame.time.get_ticks()
+                    tempo = relogio2 - relogio
+                    if m1 and tempo > 200:
+                        pygame.quit()
+
             pygame.draw.rect(screen,(75, 0, 130),button1)
             pygame.draw.rect(screen,(75, 0, 130),button2)
-            if menu_2:
-                pygame.draw.rect(screen,(75, 0, 130),button3)
+            pygame.draw.rect(screen,(75, 0, 130),button3)
 
             screen.blit(text_1,(button1_x,button1_y))
             screen.blit(text_2,(button2_x,button2_y))
-            if menu_2:
-                screen.blit(text_3,(button3_x,button3_y))
+            screen.blit(text_3,(button3_x,button3_y))
 
 
         #checando quit
@@ -118,8 +139,43 @@ def main():
                     menu_2 = True
 
 
-        #if options:
-        #    #slider_volume
+        if options:
+            mouse = pygame.mouse.get_pos()
+            apertado = pygame.mouse.get_pressed()[0]
+
+            volume_label_width = 500
+            volume_label_height = 100
+
+            volume_label_x = width/2-volume_label_width/2
+            volume_label_y = height/2-volume_label_height/2 - 200
+            volume_label2_x = volume_label_x
+            volume_label2_y = volume_label_y + 200
+            return_x = volume_label_x
+            return_y = volume_label2_y + 200
+
+            volume_label_rect = pygame.Rect(volume_label_x,volume_label_y,volume_label_width,volume_label_height)
+            volume_label2_rect = pygame.Rect(volume_label2_x,volume_label2_y,volume_label_width,volume_label_height)
+            return_rect = pygame.Rect(return_x,return_y,volume_label_width,volume_label_height)
+
+            volume_label_text = myfont.render("Sound effects volume",False,(0,0,0))
+            volume_label2_text = myfont.render("Music volume",False,(0,0,0))
+            return_text = myfont.render("return",False,(0,0,0))
+
+            pygame.draw.rect(screen,(255, 255, 255),volume_label_rect)
+            pygame.draw.rect(screen,(255, 255, 255),volume_label2_rect)
+            pygame.draw.rect(screen,(75, 0, 130),return_rect)
+
+            screen.blit(volume_label_text,(volume_label_x,volume_label_y))
+            screen.blit(volume_label2_text,(volume_label2_x,volume_label2_y))
+            screen.blit(return_text,(return_x,return_y))
+
+            if return_rect.collidepoint((mouse)) and apertado:
+                relogio = pygame.time.get_ticks()
+                options = False
+                menu = True
+
+
+
         if start == True:
             #checando eventos criando tiros
             m1 = pygame.mouse.get_pressed()[0]
@@ -225,18 +281,60 @@ def main():
             textsurface = myfont.render("Kills: {}".format(conta_kills),False,(0,0,0))
             screen.blit(textsurface,(0,0))
 
-            #if not vidas:
-            #    start = False
-            #    game_over = True
+            if not vidas:
+                start = False
+                game_over = True
             for i in range(vidas):
                 screen.blit(vida,(0+i*v_rect,50))
             #funcao para desenhar a hitbox dos sprites, debug
-            draw_hb(all_sprites,screen)
-            p1.draw_hitbox(screen)
+            #draw_hb(all_sprites,screen)
+            #p1.draw_hitbox(screen)
             #pygame.draw.circle(screen, (0, 0, 0), (width/2, height/2), 10) #--> centro da tela
             if game_over == True:
-                running = False
+                start = False
                 menu_2 = False
+                p1.kill()
+
+        if game_over:
+            mouse = pygame.mouse.get_pos()
+            apertado = pygame.mouse.get_pressed()[0]
+
+            game_over_width = 800
+            game_over_height = 100
+
+            choice_width = 200
+            choice_height = game_over_height
+
+            game_over_x = width/2-game_over_width/2
+            game_over_y = height/2-game_over_height/2 - 200
+
+            choice1_x = width/2-(3/2)*choice_width
+            choice1_y = height/2-choice_height/2 + 200
+
+            choice2_x = width/2+(1/2)*choice_width
+            choice2_y = height/2-choice_height/2 + 200
+
+            game_over_rect = pygame.Rect(game_over_x,game_over_y,game_over_width,game_over_height)
+            choice1_rect = pygame.Rect(choice1_x,choice1_y,choice_width,choice_height)
+            choice2_rect = pygame.Rect(choice2_x,choice2_y,choice_width,choice_height)
+
+            game_over_text = myfont.render("You died. Do you want to play again?",False,(0,0,0))
+            choice1_text = myfont.render("Yes",False,(0,0,0))
+            choice2_text = myfont.render("No",False,(0,0,0))
+
+            pygame.draw.rect(screen,(255, 255, 255),game_over_rect)
+            pygame.draw.rect(screen,(100, 100, 255),choice1_rect)
+            pygame.draw.rect(screen,(255, 100, 100),choice2_rect)
+
+            screen.blit(game_over_text,(game_over_x,game_over_y))
+            screen.blit(choice1_text,(choice1_x,choice1_y))
+            screen.blit(choice2_text,(choice2_x,choice2_y))
+
+            if choice1_rect.collidepoint(mouse) and apertado:
+                return
+            if choice2_rect.collidepoint(mouse) and apertado:
+                pygame.quit()
+
         pygame.display.update()
 
 while True:
