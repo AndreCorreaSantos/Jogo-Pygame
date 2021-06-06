@@ -35,10 +35,15 @@ def main():
     relogio = pygame.time.get_ticks()
     #criando 10 invasores iniciais em cordenadas aleatorias da tela
     conta_kills = 0
+    boss_kills = 0
     start = False
     menu = True
     menu_2 = False
     game_over = False
+    boss_up = False
+    boss1_up = False
+    boss2_up = False
+    boss3_up = False
     pygame.font.init()
     myfont = pygame.font.SysFont("Arial",50)
     #lista de particulas [loc,velocity,timer]
@@ -46,8 +51,10 @@ def main():
     vida = pygame.image.load("assets/vida.png")
     vida = pygame.transform.scale(vida,(64,64))
     v_rect = vida.get_rect().width
-    numero_invasores= 10
+    numero_invasores= 5
+
     while (1):
+
         fps = str(int(clock.get_fps()))
         fps_text = myfont.render(str(fps),False,(255,255,255))
         screen.blit(fps_text,(0,height))
@@ -178,29 +185,57 @@ def main():
                     all_sprites.add(bala)
                     start_w = now_w
 
-            col = pygame.sprite.groupcollide(tiros,invasores,True,True)
-            col2 = pygame.sprite.groupcollide(players,invasores,False,True)
+            colisao_tiro = pygame.sprite.groupcollide(tiros,invasores,True,True)
+            colisao_player = pygame.sprite.groupcollide(players,invasores,False,True)
+            colisao_boss = pygame.sprite.groupcollide(bosses,tiros,False,True)
 
-            for i in col:
+            for i in colisao_tiro:
                 for u in range(50):
                     particles.append([[i.rect.x,i.rect.y],[random.randint(0,20)/10 - 1,random.randint(-40,-20)*0.1],random.randint(7,14),random.randint(0,222)])
-                u = invasor(random.randint(100,2000),random.randint(100,2000),random.randint(2,5),random.randint(2,5))
+                mapa_max_x = mapa.rect.x + mapa.rect.w
+                mapa_max_y = mapa.rect.y + mapa.rect.h
+                mapa_min_x = mapa.rect.x
+                mapa_min_y = mapa.rect.y
+                aleatorio_x = random.randint(mapa_min_x,mapa_max_x)
+                aleatorio_y = random.randint(mapa_min_y,mapa_max_y)
+                v_componente_min = 2
+                v_componente_max = 5
+                v_aleatoria_x = random.randint(v_componente_min,v_componente_max)
+                v_aleatoria_y = random.randint(v_componente_min,v_componente_max)
+                u = invasor(aleatorio_x,aleatorio_y,v_aleatoria_x,v_aleatoria_y)
                 invasores.add(u)
                 all_sprites.add(u)
+                if not boss_up:
+                    conta_kills += 1
 
-                conta_kills += 1
-
-            for i in col2:
+            for i in colisao_player:
                 for u in range(50):
                         particles.append([[i.rect.x,i.rect.y],[random.randint(0,20)/10 - 1,random.randint(-40,-20)*0.1],random.randint(7,14),random.randint(0,222)])
-
-                u = invasor(random.randint(100,2000),random.randint(100,2000),random.randint(2,5),random.randint(2,5))
+                mapa_max_x = mapa.rect.x + mapa.rect.w - 400
+                mapa_max_y = mapa.rect.y + mapa.rect.h - 400
+                mapa_min_x = mapa.rect.x +  400
+                mapa_min_y = mapa.rect.y + 400
+                aleatorio_x = random.randint(mapa_min_x,mapa_max_x)
+                aleatorio_y = random.randint(mapa_min_y,mapa_max_y)
+                v_min = 2
+                v_max = 5
+                v_aleatoria_x = random.randint(v_min,v_max)
+                v_aleatoria_y = random.randint(v_min,v_max)
+                u = invasor(aleatorio_x,aleatorio_y,v_aleatoria_x,v_aleatoria_y)   
                 invasores.add(u)
                 all_sprites.add(u)
-                conta_kills += 1
+                if not boss_up:
+                    conta_kills += 1
                 vidas -= 1
-                #tocar animacao de dano
-                        #recebendo e aplicando os parametros para fazer o offset da camera
+            
+            for i in colisao_boss:
+                i.hp -= 1
+                for u in range(50):
+                    particles.append([[i.rect.x,i.rect.y],[random.randint(0,20)/10 - 1,random.randint(-40,-20)*0.1],random.randint(7,14),random.randint(0,222)])
+
+
+
+
             velocidade = 6
             scroll = [0,0]
             scroll[0] = int((p1.rect.x-scroll[0]-width/2+p1.rect.w/2)/15)
@@ -216,11 +251,6 @@ def main():
             mapa.rect.x += scroll[0]
             mapa.rect.y += scroll[1]
 
-            while len(invasores)  < numero_invasores:
-                u = invasor(random.randint(100,2000),random.randint(100,2000),random.randint(2,3),random.randint(2,3))
-                invasores.add(u)
-                all_sprites.add(u)
-
             for i in all_sprites:
                 if type(i) == player:
                     i.update(-vpx,-vpy)
@@ -234,10 +264,16 @@ def main():
                     if testex:
                         i.rect.x += scroll[0]
                     if testey:
-                     i.rect.y += scroll[1]
-                    i.update(mapa)
+                        i.rect.y += scroll[1]
+                    i.update()
                     i.move_towards_player(p1)
                     #i.draw(screen)
+                    screen.blit(i.image,(i.rect.x+scroll[0],i.rect.y+scroll[1]))
+                elif type(i) == boss:
+                    if testex:
+                        i.rect.x += scroll[0]
+                    if testey:
+                        i.rect.y += scroll[1]
                     screen.blit(i.image,(i.rect.x+scroll[0],i.rect.y+scroll[1]))
                 else:
                     if testex:
@@ -260,15 +296,70 @@ def main():
                 particle[2] -= 0.2
                 particle[1][1] += 0.1
                 c = particle[3]
-                pygame.draw.circle(screen, (c,c,c), [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+                pygame.draw.circle(screen, (c,c/3.5,c/3.5), [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
                 if particle[2] <= 0:
                     #remove.append(particles.index(particle))
                     particles.remove(particle)
 
-            if conta_kills > 50:
-                mapa = mapa2
-            if conta_kills > 100:
-                mapa = mapa3
+
+            if conta_kills == 3 and not boss_up and boss_kills == 0:
+                imagem_boss1 = "assets/vida.png"
+                boss1 = boss(imagem_boss1,mapa,30)
+                bosses.add(boss1)
+                all_sprites.add(boss1)
+                boss_up = True
+                boss1_up = True
+
+            if boss1_up:
+
+                if boss1.hp == 0:
+                    boss1.kill()
+                    boss_kills += 1
+                    mapa = mapa2
+                    boss_up = False
+                    boss1_up = False
+
+            if conta_kills == 200 and not boss_up and boss_kills == 1:
+                imagem_boss2 = "assets/i.png"
+                boss2 = boss(imagem_boss2,mapa,50)
+                all_sprites.add(boss2)
+                bosses.add(boss2)
+                boss2_up = True
+                boss_up = True
+
+            if boss2_up:
+                if boss2.hp == 0:
+                    boss2.kill()
+                    boss_kills += 1
+                    mapa = mapa3
+                    boss_up = False
+                    boss2_up = False
+
+            if conta_kills == 300 and not boss_up and boss_kills == 2:
+                imagem_boss3 = "assets/i.png"
+                boss3 = boss(imagem_boss3,mapa,70)
+                all_sprites.add(boss3)
+                bosses.add(boss3)
+                boss_up = True
+
+            if boss3_up:
+                if boss3.hp == 0:
+                    boss3.kill()
+                    boss_kills += 1
+                    boss_up = False
+                    boss3_up = False
+            
+            
+            if not boss_up and boss_kills == 0:
+                while len(invasores) < 5:
+                    invasor.spawn(mapa)
+            if not boss_up and boss_kills == 1:
+                while len(invasores) < 10:
+                    invasor.spawn(mapa)
+            if not boss_up and boss_kills == 2:
+                while len(invasores) < 15:
+                    invasor.spawn(mapa)
+    
 
             textsurface = myfont.render("Kills: {}".format(conta_kills),False,(0,0,0))
             screen.blit(textsurface,(0,0))
@@ -276,14 +367,17 @@ def main():
             fps = myfont.render(str(int(clock.get_fps())), True, pygame.Color('white'))
             screen.blit(fps,(0,100))
 
-            if not vidas:
-                start = False
-                game_over = True
+            #if not vidas:
+            #    start = False
+            #    game_over = True
+            
             for i in range(vidas):
-                screen.blit(vida,(0+i*v_rect,50))
+                screen.blit(vida,(i*v_rect,50))
+
             #funcao para desenhar a hitbox dos sprites, debug
             #draw_hb(all_sprites,screen)
             #p1.draw_hitbox(screen)
+            
             if game_over == True:
                 start = False
                 menu_2 = False

@@ -2,6 +2,8 @@ import pygame
 import math
 import ctypes
 import random
+
+from pygame import image
 user32 = ctypes.windll.user32
 width,height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 
@@ -81,34 +83,30 @@ class invasor(pygame.sprite.Sprite):
         self.rect.y = y
         self.vx = vx
         self.vy = vy
-    def update(self,mapa):
-        v_x = self.vx
-        v_y = self.vy
-        if self.rect.x - mapa.rect.x <= 0:
-            v_x = -v_x
-            self.vx = v_x
-        if self.rect.x - mapa.rect.x >= mapa.rect.w-self.rect.w:
-            v_x = -v_x
-            self.vx = v_x
-        if self.rect.y - mapa.rect.y <= 0:
-            v_y = -v_y
-            self.vy = v_y
-        if self.rect.y - mapa.rect.y >= mapa.rect.h-self.rect.h:
-            v_y = -v_y
-            self.vy = v_y
-        self.rect.x += v_x
-        self.rect.y += v_y 
+        self.vmax = math.sqrt(self.vx**2 + self.vy**2)
+    def update(self):
+        self.rect.x += self.vx
+        self.rect.y += self.vy 
     def draw(self,screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
     def draw_hitbox(self,screen):
         pygame.draw.rect(screen, (0,0,0), self.rect, 2)
     #funcao que spawna invasores em packs em lugares aleatorios da tela.
     def spawn(mapa):
-        #ponto = (random.randint(0,width),random.randint(0,height))
-        ponto = (mapa.rect.x+50,mapa.rect.y+50)
-        v_inicial = (random.randint(-5,5),random.randint(-5,5))
-        u = invasor(ponto[0],ponto[1],v_inicial[0],v_inicial[1])
+        mapa_max_x = mapa.rect.x + mapa.rect.w
+        mapa_max_y = mapa.rect.y + mapa.rect.h
+        mapa_min_x = mapa.rect.x
+        mapa_min_y = mapa.rect.y
+        aleatorio_x = random.randint(mapa_min_x,mapa_max_x)
+        aleatorio_y = random.randint(mapa_min_y,mapa_max_y)
+        v_componente_min = 2
+        v_componente_max = 5
+        v_aleatoria_x = random.randint(v_componente_min,v_componente_max)
+        v_aleatoria_y = random.randint(v_componente_min,v_componente_max)
+        u = invasor(aleatorio_x,aleatorio_y,v_aleatoria_x,v_aleatoria_y)
         invasores.add(u)
+        all_sprites.add(u)
+
 
     def dist(self,next):
         distx = (self.rect.x - next.rect.x)**2
@@ -116,15 +114,22 @@ class invasor(pygame.sprite.Sprite):
         return math.sqrt(distx + disty)
 
     def move_towards_player(self, player):
-        # Find direction vector (dx, dy) between enemy and player.
-        dx, dy = player.rect.x - self.rect.x, player.rect.y - self.rect.y
-        dist = math.hypot(dx, dy)
-        if dist == 0:
-            dist = 1
-        dx, dy = dx / dist, dy / dist  # Normalize.
-        # Move along this normalized vector towards the player at current speed.
-        self.rect.x += dx * v_inv
-        self.rect.y += dy * v_inv
+        dx,dy = self.rect.x - player.rect.x,self.rect.y-player.rect.y
+        ang = math.atan2(dy,dx)
+        self.vx =  -self.vmax*math.cos(ang)
+        self.vy = -self.vmax*math.sin(ang)
+
+class boss(pygame.sprite.Sprite):
+    def __init__(self,image,mapa,hp):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(image).convert_alpha()
+        self.rect = self.image.get_rect()
+        self.rect.x = mapa.rect.x + mapa.rect.w/2
+        self.rect.y = mapa.rect.y + mapa.rect.h/2
+        self.hp = hp
+    def draw_hitbox(self,screen):
+        pygame.draw.rect(screen, (0,0,0), self.rect, 2)
+
     
 class map(pygame.sprite.Sprite):
     def __init__(self,imagem,x,y):
@@ -181,4 +186,5 @@ tiros = pygame.sprite.Group()
 invasores = pygame.sprite.Group()
 players = pygame.sprite.Group()
 mapas = pygame.sprite.Group()
+bosses = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
