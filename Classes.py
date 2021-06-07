@@ -93,12 +93,19 @@ class invasor(pygame.sprite.Sprite):
         pygame.draw.rect(screen, (0,0,0), self.rect, 2)
     #funcao que spawna invasores em packs em lugares aleatorios da tela.
     def spawn(mapa):
-        mapa_max_x = mapa.rect.x + mapa.rect.w
-        mapa_max_y = mapa.rect.y + mapa.rect.h
-        mapa_min_x = mapa.rect.x
-        mapa_min_y = mapa.rect.y
-        aleatorio_x = random.randint(mapa_min_x,mapa_max_x)
-        aleatorio_y = random.randint(mapa_min_y,mapa_max_y)
+        aleatorio = random.randint(1,4)
+        if aleatorio == 1:
+            aleatorio_x = mapa.rect.x
+            aleatorio_y = mapa.rect.y
+        elif aleatorio == 2:
+            aleatorio_x = mapa.rect.x+mapa.rect.width
+            aleatorio_y = mapa.rect.y
+        elif aleatorio == 3:
+            aleatorio_x = mapa.rect.x
+            aleatorio_y = mapa.rect.y + mapa.rect.height
+        elif aleatorio == 4:
+            aleatorio_x = mapa.rect.x + mapa.rect.width
+            aleatorio_y = mapa.rect.y + mapa.rect.height
         v_componente_min = 2
         v_componente_max = 5
         v_aleatoria_x = random.randint(v_componente_min,v_componente_max)
@@ -120,15 +127,31 @@ class invasor(pygame.sprite.Sprite):
         self.vy = -self.vmax*math.sin(ang)
 
 class boss(pygame.sprite.Sprite):
-    def __init__(self,image,mapa,hp):
+    def __init__(self,image,mapa,hp,vx,vy,vmax):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(image).convert_alpha()
+        image = pygame.image.load(image).convert_alpha()
+        self.image =  pygame.transform.scale(image, (640, 640))
         self.rect = self.image.get_rect()
         self.rect.x = mapa.rect.x + mapa.rect.w/2
         self.rect.y = mapa.rect.y + mapa.rect.h/2
+        self.rect.center = (self.rect.x + self.rect.width/2,self.rect.y + self.rect.height/2)
+        self.vx = vx
+        self.vy = vy
+        self.vmax = vmax
         self.hp = hp
+
+    def update(self):
+        self.rect.x += self.vx
+        self.rect.y += self.vy 
+
     def draw_hitbox(self,screen):
         pygame.draw.rect(screen, (0,0,0), self.rect, 2)
+
+    def move_towards_player(self, player):
+        dx,dy = self.rect.center[0] - player.rect.x, self.rect.center[1] - player.rect.y
+        ang = math.atan2(dy,dx)
+        self.vx =  -self.vmax*math.cos(ang)
+        self.vy = -self.vmax*math.sin(ang)
 
     
 class map(pygame.sprite.Sprite):

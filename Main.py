@@ -40,6 +40,7 @@ def main():
     menu = True
     menu_2 = False
     game_over = False
+    win = False
     boss_up = False
     boss1_up = False
     boss2_up = False
@@ -65,8 +66,8 @@ def main():
     while (1):
 
         #codigo para printar fps na tela (debug)
-       # fps = str(int(clock.get_fps()))
-       # fps_text = myfont.render(str(fps),False,(255,255,255))
+        fps = str(int(clock.get_fps()))
+        fps_text = myfont.render(str(fps),False,(255,255,255))
        # screen.blit(fps_text,(0,height))
 
         background.fill((0,0,0))
@@ -145,9 +146,13 @@ def main():
                     if apertado and tempo > 200:
                         pygame.quit()
 
-            pygame.draw.rect(screen,(75, 0, 130),button1)
+            if menu_2:
+                pygame.draw.rect(screen,(75, 0, 130),button1)
+            else:
+                pygame.draw.rect(screen,(184, 134, 11),button1)
+                
             pygame.draw.rect(screen,(75, 0, 130),button2)
-            pygame.draw.rect(screen,(75, 0, 130),button3)
+            pygame.draw.rect(screen,(205, 92, 92),button3)
 
             screen.blit(text_1,(button1_x,button1_y))
             screen.blit(text_2,(button2_x,button2_y))
@@ -335,7 +340,10 @@ def main():
                         i.rect.x += scroll[0]
                     if testey:
                         i.rect.y += scroll[1]
+                    i.move_towards_player(p1)
+                    i.update()
                     screen.blit(i.image,(i.rect.x+scroll[0],i.rect.y+scroll[1]))
+    
                 else:
                     if testex:
                         i.rect.x += scroll[0]
@@ -363,9 +371,9 @@ def main():
                     particles.remove(particle)
 
 
-            if conta_kills == 3 and not boss_up and boss_kills == 0:
-                imagem_boss1 = "assets/vida.png"
-                boss1 = boss(imagem_boss1,mapa,30)
+            if conta_kills == 100 and not boss_up and boss_kills == 0:
+                imagem_boss1 = "assets/fase 1/boss.png"
+                boss1 = boss(imagem_boss1,mapa,30,1,1,2)
                 bosses.add(boss1)
                 all_sprites.add(boss1)
                 boss_up = True
@@ -385,8 +393,8 @@ def main():
 
 
             if conta_kills == 200 and not boss_up and boss_kills == 1:
-                imagem_boss2 = "assets/i.png"
-                boss2 = boss(imagem_boss2,mapa,50)
+                imagem_boss2 = "assets/fase2/bossf2.png"
+                boss2 = boss(imagem_boss2,mapa,50,2,2,3)
                 all_sprites.add(boss2)
                 bosses.add(boss2)
                 boss2_up = True
@@ -402,11 +410,13 @@ def main():
                     pygame.mixer.music.load("assets/audio/fase_3.mp3")
                     pygame.mixer.music.set_volume(volume_background)
                     pygame.mixer.music.play(loops=-1)
+
             if conta_kills == 300 and not boss_up and boss_kills == 2:
-                imagem_boss3 = "assets/i.png"
-                boss3 = boss(imagem_boss3,mapa,70)
+                imagem_boss3 = "assets/fase3/bossf3.png"
+                boss3 = boss(imagem_boss3,mapa,70,2,2,4.5)
                 all_sprites.add(boss3)
                 bosses.add(boss3)
+                boss3_up = True
                 boss_up = True
 
             if boss3_up:
@@ -415,6 +425,8 @@ def main():
                     boss_kills += 1
                     boss_up = False
                     boss3_up = False
+                    win = True
+                    game_over = True
             
             
             if not boss_up and boss_kills == 0:
@@ -424,11 +436,11 @@ def main():
                 while len(invasores) < 10:
                     invasor.spawn(mapa)
             if not boss_up and boss_kills == 2:
-                while len(invasores) < 15:
+                while len(invasores) < 17:
                     invasor.spawn(mapa)
     
 
-            textsurface = myfont.render("Kills: {}".format(conta_kills),False,(100,120,30))
+            textsurface = myfont.render("Kills: {}".format(conta_kills),False,(0, 139, 139))
             screen.blit(textsurface,(0,0))
 
                 #printar fps na tela
@@ -476,14 +488,18 @@ def main():
             choice2_rect = pygame.Rect(choice2_x,choice2_y,choice_width,choice_height)
 
             game_over_text = myfont.render("You died. Do you want to play again?",False,(0,0,0))
+            win_text = myfont.render("You Won. Do you want to play again?",False,(0,0,0))
             choice1_text = myfont.render("Yes",False,(0,0,0))
             choice2_text = myfont.render("No",False,(0,0,0))
 
             pygame.draw.rect(screen,(255, 255, 255),game_over_rect)
             pygame.draw.rect(screen,(100, 100, 255),choice1_rect)
             pygame.draw.rect(screen,(255, 100, 100),choice2_rect)
-
-            screen.blit(game_over_text,(game_over_x,game_over_y))
+            
+            if win:
+                screen.blit(win_text,(game_over_x,game_over_y))
+            else:
+                screen.blit(game_over_text,(game_over_x,game_over_y))
             screen.blit(choice1_text,(choice1_x,choice1_y))
             screen.blit(choice2_text,(choice2_x,choice2_y))
 
@@ -491,7 +507,8 @@ def main():
                 return
             if choice2_rect.collidepoint(mouse) and apertado:
                 pygame.quit()
-        clock.tick(200)
+        
+        clock.tick(120)
 
         pygame.display.flip()
 
