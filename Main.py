@@ -23,7 +23,7 @@ def main():
     p1 = player('assets/player.png',width/2,height/2)
     players.add(p1)
     all_sprites.add(p1)
-    vidas = 3
+    vidas = 6
     c = 0
     #pygame.mixer.music.load("assets/musica.wav")
     #pygame.mixer.music.play()
@@ -51,13 +51,24 @@ def main():
     vida = pygame.image.load("assets/vida.png")
     vida = pygame.transform.scale(vida,(64,64))
     v_rect = vida.get_rect().width
-    numero_invasores= 5
+    pygame.mixer.pre_init()
+    pygame.mixer.init()
+    pygame.init()
+    #contadores para cada estado do jogo
+    menu_c = 0
+    start_c = 0
+    options_c = 0
+    # valores para volumes de audios
+    volume_background = 0.02
+    volume_sound_effects = 0.02
 
     while (1):
 
-        fps = str(int(clock.get_fps()))
-        fps_text = myfont.render(str(fps),False,(255,255,255))
-        screen.blit(fps_text,(0,height))
+        #codigo para printar fps na tela (debug)
+       # fps = str(int(clock.get_fps()))
+       # fps_text = myfont.render(str(fps),False,(255,255,255))
+       # screen.blit(fps_text,(0,height))
+
         background.fill((0,0,0))
         screen.blit(background,(0,0))
         apertado = pygame.mouse.get_pressed()[0]
@@ -72,6 +83,12 @@ def main():
                         menu_2 = True
         
         if menu:
+            #limpando mixer e carregando musica do menu
+            if not menu_c:  
+                pygame.mixer.music.load("assets/audio/musica_menu.wav")
+                pygame.mixer.music.set_volume(volume_background)
+                pygame.mixer.music.play(loops=-1)
+
             #construindo menu
             button_width = 500
             button_height = 100
@@ -136,9 +153,14 @@ def main():
             screen.blit(text_2,(button2_x,button2_y))
             screen.blit(text_3,(button3_x,button3_y))
 
+            menu_c += 1
+
 
         #checando quit
         if options:
+            #pausando musica do jogo
+            if not options_c:
+                pygame.mixer.music.pause()
 
             volume_label_width = 500
             volume_label_height = 100
@@ -168,13 +190,19 @@ def main():
 
             if return_rect.collidepoint(mouse) and apertado:
                 relogio = pygame.time.get_ticks()
+                pygame.mixer.music.unpause()
                 options = False
                 menu = True
 
 
 
         if start == True:
-            #checando eventos criando tiros
+
+            #carregando e tocando musica
+            if not start_c:
+                pygame.mixer.music.load("assets/audio/fase_1.wav")
+                pygame.mixer.music.set_volume(volume_background)
+                pygame.mixer.music.play(loops=-1)
 
             if apertado:
                 now_w = pygame.time.get_ticks()
@@ -184,6 +212,8 @@ def main():
                     tiros.add(bala)
                     all_sprites.add(bala)
                     start_w = now_w
+                    pygame.mixer.Channel(0).play(pygame.mixer.Sound('assets/audio/tiro1.wav'), maxtime=600)
+                    pygame.mixer.Channel(0).set_volume(volume_sound_effects)
 
             colisao_tiro = pygame.sprite.groupcollide(tiros,invasores,True,True)
             colisao_player = pygame.sprite.groupcollide(players,invasores,False,True)
@@ -205,6 +235,16 @@ def main():
                 u = invasor(aleatorio_x,aleatorio_y,v_aleatoria_x,v_aleatoria_y)
                 invasores.add(u)
                 all_sprites.add(u)
+                rand_sound = random.randint(1,3)
+                if rand_sound == 1:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao1.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).set_volume(volume_sound_effects)
+                if rand_sound ==2:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao2.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).set_volume(volume_sound_effects)
+                if rand_sound == 3:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao3.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).set_volume(volume_sound_effects)
                 if not boss_up:
                     conta_kills += 1
 
@@ -224,6 +264,16 @@ def main():
                 u = invasor(aleatorio_x,aleatorio_y,v_aleatoria_x,v_aleatoria_y)   
                 invasores.add(u)
                 all_sprites.add(u)
+                rand_sound = random.randint(1,3)
+                if rand_sound == 1:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao1.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).set_volume(volume_sound_effects)
+                if rand_sound ==2:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao2.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).set_volume(volume_sound_effects)
+                if rand_sound == 3:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao3.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).set_volume(volume_sound_effects)
                 if not boss_up:
                     conta_kills += 1
                 vidas -= 1
@@ -231,12 +281,23 @@ def main():
             for i in colisao_boss:
                 i.hp -= 1
                 for u in range(50):
-                    particles.append([[i.rect.x,i.rect.y],[random.randint(0,20)/10 - 1,random.randint(-40,-20)*0.1],random.randint(7,14),random.randint(0,222)])
+                    particles.append([[i.rect.x + i.rect.w/2 ,i.rect.y+i.rect.h/2],[random.randint(0,20)/10 - 1,random.randint(-40,-20)*0.1],random.randint(7,14),random.randint(0,222)])
+
+                rand_sound = random.randint(1,3)
+                if rand_sound == 1:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao1.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).set_volume(volume_sound_effects)
+                if rand_sound ==2:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao2.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).set_volume(volume_sound_effects)
+                if rand_sound == 3:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao3.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).set_volume(volume_sound_effects)
 
 
 
 
-            velocidade = 6
+            velocidade = 7
             scroll = [0,0]
             scroll[0] = int((p1.rect.x-scroll[0]-width/2+p1.rect.w/2)/15)
             scroll[1] = int((p1.rect.y- scroll[1]-height/2+p1.rect.h/2)/15)
@@ -318,6 +379,10 @@ def main():
                     mapa = mapa2
                     boss_up = False
                     boss1_up = False
+                    pygame.mixer.music.load("assets/audio/fase_2.wav")
+                    pygame.mixer.music.set_volume(volume_background)
+                    pygame.mixer.music.play(loops=-1)
+
 
             if conta_kills == 200 and not boss_up and boss_kills == 1:
                 imagem_boss2 = "assets/i.png"
@@ -326,7 +391,7 @@ def main():
                 bosses.add(boss2)
                 boss2_up = True
                 boss_up = True
-
+            
             if boss2_up:
                 if boss2.hp == 0:
                     boss2.kill()
@@ -334,7 +399,9 @@ def main():
                     mapa = mapa3
                     boss_up = False
                     boss2_up = False
-
+                    pygame.mixer.music.load("assets/audio/fase_3.wav")
+                    pygame.mixer.music.set_volume(volume_background)
+                    pygame.mixer.music.play(loops=-1)
             if conta_kills == 300 and not boss_up and boss_kills == 2:
                 imagem_boss3 = "assets/i.png"
                 boss3 = boss(imagem_boss3,mapa,70)
@@ -361,15 +428,16 @@ def main():
                     invasor.spawn(mapa)
     
 
-            textsurface = myfont.render("Kills: {}".format(conta_kills),False,(0,0,0))
+            textsurface = myfont.render("Kills: {}".format(conta_kills),False,(100,120,30))
             screen.blit(textsurface,(0,0))
 
-            fps = myfont.render(str(int(clock.get_fps())), True, pygame.Color('white'))
-            screen.blit(fps,(0,100))
+                #printar fps na tela
+            #fps = myfont.render(str(int(clock.get_fps())), True, pygame.Color('white'))
+            #screen.blit(fps,(0,100))
 
-            #if not vidas:
-            #    start = False
-            #    game_over = True
+            if not vidas:
+                start = False
+                game_over = True
             
             for i in range(vidas):
                 screen.blit(vida,(i*v_rect,50))
@@ -382,6 +450,9 @@ def main():
                 start = False
                 menu_2 = False
                 p1.kill()
+                for i in bosses:
+                    i.kill()
+            start_c += 1
 
         if game_over:
 
