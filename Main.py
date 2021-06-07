@@ -85,7 +85,7 @@ def main():
         if menu:
             #limpando mixer e carregando musica do menu
             if not menu_c:  
-                pygame.mixer.music.load("assets/audio/musica_menu.wav")
+                pygame.mixer.music.load("assets/audio/fase_1boss.wav")
                 pygame.mixer.music.set_volume(volume_background)
                 pygame.mixer.music.play(loops=-1)
 
