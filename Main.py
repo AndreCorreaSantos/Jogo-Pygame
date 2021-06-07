@@ -95,7 +95,7 @@ def main():
             button_height = 100
 
             button1_x = width/2-button_width/2
-            button1_y = height/2-button_height/2 - 200
+            button1_y = height/2-button_height/2 -100
 
             button2_x = button1_x
             button2_y = button1_y + 200
@@ -103,12 +103,21 @@ def main():
             button3_x = button1_x
             button3_y = button2_y + 200
 
+            title_width = button_width+100
+            title_height = button_height+50
+
+            title_x = width/2-button_width/2 - (title_width-button_width)/2
+            title_y = height/2-button_height/2 -300
+
+            title_text = myfont.render("Universal Invaders",False,(0,0,0))
+
             if menu_2:
                 text_1 = myfont.render("Resume Game",False,(0,0,0))
             else:
                 text_1 = myfont.render("Start new Game",False,(0,0,0))
 
             text_2 = myfont.render("Options",False,(0,0,0))
+
 
             if menu_2:
                 text_3 = myfont.render("Main menu",False,(0,0,0))
@@ -119,6 +128,7 @@ def main():
             button1 = pygame.Rect(button1_x,button1_y,button_width,button_height)
             button2 = pygame.Rect(button2_x,button2_y,button_width,button_height)
             button3 = pygame.Rect(button3_x,button3_y,button_width,button_height)
+            title = pygame.Rect(title_x,title_y,title_width,title_height)
 
             if button1.collidepoint(mouse):
                 if apertado:
@@ -148,8 +158,13 @@ def main():
 
             if menu_2:
                 pygame.draw.rect(screen,(75, 0, 130),button1)
+                pygame.draw.rect(screen,(75, 0, 130),button2)
             else:
                 pygame.draw.rect(screen,(184, 134, 11),button1)
+                pygame.draw.rect(screen,(146, 168, 209),title)
+                title_text_width,title_text_height = title_text.get_size()
+                screen.blit(title_text,(title_x +title_width/2 - title_text_width/2 -5,title_y+title_height/2 - title_text_height/2))
+                
                 
             pygame.draw.rect(screen,(75, 0, 130),button2)
             pygame.draw.rect(screen,(205, 92, 92),button3)
