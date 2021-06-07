@@ -85,7 +85,7 @@ def main():
         if menu:
             #limpando mixer e carregando musica do menu
             if not menu_c:  
-                pygame.mixer.music.load("assets/audio/fase_1boss.wav")
+                pygame.mixer.music.load("assets/audio/fase_1boss.mp3")
                 pygame.mixer.music.set_volume(volume_background)
                 pygame.mixer.music.play(loops=-1)
 
@@ -200,7 +200,7 @@ def main():
 
             #carregando e tocando musica
             if not start_c:
-                pygame.mixer.music.load("assets/audio/fase_1.wav")
+                pygame.mixer.music.load("assets/audio/fase_1.mp3")
                 pygame.mixer.music.set_volume(volume_background)
                 pygame.mixer.music.play(loops=-1)
 
@@ -212,7 +212,7 @@ def main():
                     tiros.add(bala)
                     all_sprites.add(bala)
                     start_w = now_w
-                    pygame.mixer.Channel(0).play(pygame.mixer.Sound('assets/audio/tiro1.wav'), maxtime=600)
+                    pygame.mixer.Channel(0).play(pygame.mixer.Sound('assets/audio/tiro1.mp3'), maxtime=600)
                     pygame.mixer.Channel(0).set_volume(volume_sound_effects)
 
             colisao_tiro = pygame.sprite.groupcollide(tiros,invasores,True,True)
@@ -237,13 +237,13 @@ def main():
                 all_sprites.add(u)
                 rand_sound = random.randint(1,3)
                 if rand_sound == 1:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao1.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao1.mp3'), maxtime=600)
                     pygame.mixer.Channel(1).set_volume(volume_sound_effects)
                 if rand_sound ==2:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao2.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao2.mp3'), maxtime=600)
                     pygame.mixer.Channel(1).set_volume(volume_sound_effects)
                 if rand_sound == 3:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao3.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao3.mp3'), maxtime=600)
                     pygame.mixer.Channel(1).set_volume(volume_sound_effects)
                 if not boss_up:
                     conta_kills += 1
@@ -266,13 +266,13 @@ def main():
                 all_sprites.add(u)
                 rand_sound = random.randint(1,3)
                 if rand_sound == 1:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao1.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao1.mp3'), maxtime=600)
                     pygame.mixer.Channel(1).set_volume(volume_sound_effects)
                 if rand_sound ==2:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao2.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao2.mp3'), maxtime=600)
                     pygame.mixer.Channel(1).set_volume(volume_sound_effects)
                 if rand_sound == 3:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao3.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao3.mp3'), maxtime=600)
                     pygame.mixer.Channel(1).set_volume(volume_sound_effects)
                 if not boss_up:
                     conta_kills += 1
@@ -285,13 +285,13 @@ def main():
 
                 rand_sound = random.randint(1,3)
                 if rand_sound == 1:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao1.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao1.mp3'), maxtime=600)
                     pygame.mixer.Channel(1).set_volume(volume_sound_effects)
                 if rand_sound ==2:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao2.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao2.mp3'), maxtime=600)
                     pygame.mixer.Channel(1).set_volume(volume_sound_effects)
                 if rand_sound == 3:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao3.wav'), maxtime=600)
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/audio/explosao3.mp3'), maxtime=600)
                     pygame.mixer.Channel(1).set_volume(volume_sound_effects)
 
 
@@ -379,7 +379,7 @@ def main():
                     mapa = mapa2
                     boss_up = False
                     boss1_up = False
-                    pygame.mixer.music.load("assets/audio/fase_2.wav")
+                    pygame.mixer.music.load("assets/audio/fase_2.mp3")
                     pygame.mixer.music.set_volume(volume_background)
                     pygame.mixer.music.play(loops=-1)
 
@@ -399,7 +399,7 @@ def main():
                     mapa = mapa3
                     boss_up = False
                     boss2_up = False
-                    pygame.mixer.music.load("assets/audio/fase_3.wav")
+                    pygame.mixer.music.load("assets/audio/fase_3.mp3")
                     pygame.mixer.music.set_volume(volume_background)
                     pygame.mixer.music.play(loops=-1)
             if conta_kills == 300 and not boss_up and boss_kills == 2:
