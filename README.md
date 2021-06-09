@@ -2,7 +2,7 @@ Universal invaders
 
 Jogo criado por André Corrêa Santos, Henrique Damico, Breno Brolacci para a aula de desoft.
 
-O jogo é baseado no jogo antigo Space Invaders, além disso foi implementado um sistema de movimentação livre para melhorar a experiência de destruir ovnis inimigos e chefões muito difíceis.
+O jogo é inspirado no jogo antigo Space Invaders, além disso foi implementado um sistema de movimentação livre para melhorar a experiência de destruir ovnis inimigos e chefões muito difíceis.
 
 
 Instruções - 
